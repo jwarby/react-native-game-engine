@@ -6,13 +6,14 @@ import Rx from "rx";
 export default class GameEngine extends Component {
   constructor(props) {
     super(props);
-    this.state =
-      props.initState ||
-      props.initialState ||
-      props.state ||
-      props.initEntities ||
-      props.initialEntities ||
-      props.entities;
+    this.state = {
+      entities: props.initState ||
+        props.initialState ||
+        props.state ||
+        props.initEntities ||
+        props.initialEntities ||
+        props.entities
+    };
     this.timer = new Timer();
     this.timer.subscribe(this.updateHandler);
     this.touches = [];
@@ -193,10 +194,12 @@ export default class GameEngine extends Component {
       }
     };
 
-    let newState = this.props.systems.reduce(
-      (state, sys) => sys(state, args),
-      this.state
-    );
+    let newState = {
+      entities: this.props.systems.reduce(
+        (state, sys) => sys(state, args),
+        this.state.entities
+      )
+    };
 
     this.touches.length = 0;
     this.events.length = 0;
@@ -232,10 +235,10 @@ export default class GameEngine extends Component {
           onTouchMove={this.onTouchMoveHandler}
           onTouchEnd={this.onTouchEndHandler}
         >
-          {Object.keys(this.state)
-            .filter(key => this.state[key].renderer)
+          {Object.keys(this.state.entities)
+            .filter(key => this.state.entities[key].renderer)
             .map(key => {
-              let entity = this.state[key];
+              let entity = this.state.entities[key];
               if (typeof entity.renderer === "object")
                 return <entity.renderer.type key={key} {...entity} screen={this.screen} />;
               else if (typeof entity.renderer === "function")
