@@ -17,7 +17,7 @@ export default class GameEngine extends Component {
     this.timer = new Timer();
     this.timer.subscribe(this.updateHandler);
     this.touches = [];
-    this.screen = Dimensions.get("window");
+    this.screen = null;
     this.previousTime = null;
     this.previousDelta = null;
     this.events = [];
@@ -182,6 +182,8 @@ export default class GameEngine extends Component {
   };
 
   updateHandler = currentTime => {
+    if (!this.screen) return
+
     let args = {
       touches: this.touches,
       screen: this.screen,
@@ -208,8 +210,8 @@ export default class GameEngine extends Component {
     this.setState(newState);
   };
 
-  onLayoutHandler = () => {
-    this.screen = Dimensions.get("window");
+  onLayoutHandler = ({ nativeEvent }) => {
+    this.screen = nativeEvent.layout
     this.forceUpdate();
   };
 
@@ -235,15 +237,17 @@ export default class GameEngine extends Component {
           onTouchMove={this.onTouchMoveHandler}
           onTouchEnd={this.onTouchEndHandler}
         >
-          {Object.keys(this.state.entities)
-            .filter(key => this.state.entities[key].renderer)
-            .map(key => {
-              let entity = this.state.entities[key];
-              if (typeof entity.renderer === "object")
-                return <entity.renderer.type key={key} {...entity} screen={this.screen} />;
-              else if (typeof entity.renderer === "function")
-                return <entity.renderer key={key} {...entity} screen={this.screen} />;
-            })}
+          {this.screen ? (
+            Object.keys(this.state.entities)
+              .filter(key => this.state.entities[key].renderer)
+              .map(key => {
+                let entity = this.state.entities[key];
+                if (typeof entity.renderer === "object")
+                  return <entity.renderer.type key={key} {...entity} screen={this.screen} />;
+                else if (typeof entity.renderer === "function")
+                  return <entity.renderer key={key} {...entity} screen={this.screen} />;
+              })
+          ) : null}
         </View>
 
         <View
