@@ -237,6 +237,7 @@ export default class GameEngine extends Component {
           onTouchMove={this.onTouchMoveHandler}
           onTouchEnd={this.onTouchEndHandler}
         >
+          {this.props.children}
           {this.screen ? (
             Object.keys(this.state.entities)
               .filter(key => this.state.entities[key].renderer)
@@ -249,17 +250,6 @@ export default class GameEngine extends Component {
               })
           ) : null}
         </View>
-
-        <View
-          pointerEvents={"box-none"}
-          style={[
-            css.childrenContainer,
-            { width: this.screen.width, height: this.screen.height }
-          ]}
-        >
-          {this.props.children}
-        </View>
-
       </View>
     );
   }
