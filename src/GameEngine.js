@@ -215,16 +215,26 @@ export default class GameEngine extends Component {
     this.forceUpdate();
   };
 
+  decorateWithGameCoordinates(event) {
+    const [gameX, gameY] = this.getGameCoordinatesFromEvent(event)
+
+    return { ...event, gameX, gameY }
+  }
+
+  getGameCoordinatesFromEvent = ({ pageX, pageY }) => {
+    return [pageX - this.screen.x, pageY - this.screen.y]
+  }
+
   onTouchStartHandler = e => {
-    this.touchStart.onNext(e.nativeEvent);
+    this.touchStart.onNext(this.decorateWithGameCoordinates(e.nativeEvent))
   };
 
   onTouchMoveHandler = e => {
-    this.touchMove.onNext(e.nativeEvent);
+    this.touchMove.onNext(this.decorateWithGameCoordinates(e.nativeEvent))
   };
 
   onTouchEndHandler = e => {
-    this.touchEnd.onNext(e.nativeEvent);
+    this.touchEnd.onNext(this.decorateWithGameCoordinates(e.nativeEvent))
   };
 
   render() {
